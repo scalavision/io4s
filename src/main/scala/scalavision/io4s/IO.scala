@@ -22,10 +22,21 @@ object IO {
   ): FileInputStream =
     new FileInputStream(pathAndFile)
 
+  case class PathAndFile(path: String, file: String)
+  
+  private def splitPathAndFile(pathAndFile: String): PathAndFile = {
+    val paths = pathAndFile.split(separator).toVector
+    val path = paths.take(paths.size - 1)
+    PathAndFile(path.mkString(separator), paths.last)
+  }
+  
   def write(
     pathAndFile: String,
     contents: String
   ): Unit = {
+    
+    mkDirs(splitPathAndFile(pathAndFile).path)
+    
     Files.write(
       Paths.get(
         pathAndFile),
@@ -38,23 +49,43 @@ object IO {
   def deleteIfExists(
     pathAndFile: String
   ): Unit = {
-    Files.deleteIfExists(
-      Paths.get(
-        pathAndFile)
-    )
+  
+    val paths = pathAndFile.split(separator).toVector
+    val path = paths.take(paths.size - 2)
+  
+    val directory = new java.io.File(path.mkString(splitPathAndFile(pathAndFile).path))
+  
+    if (directory.exists()) {
+      Files.deleteIfExists(
+        Paths.get(
+          pathAndFile)
+      )
+    }
   }
 
   def append(
     pathAndFile: String,
     contents: String
   ) : Unit = {
+  
     Files.write(
       Paths.get(
-        pathAndFile),
+        pathAndFile
+      ),
       contents.getBytes(
         StandardCharsets.UTF_8
-      ), StandardOpenOption.APPEND
+      ),
+      StandardOpenOption.APPEND
     )
+    
+    
+  }
+  
+  def mkDirs(path: String): Unit = {
+    val directory = new java.io.File(path)
+    if (!directory.exists()) {
+      directory.mkdirs()
+    }
   }
 
   def write(
