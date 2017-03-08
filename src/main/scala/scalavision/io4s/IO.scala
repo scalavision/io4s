@@ -3,7 +3,7 @@ package scalavision.io4s
 import java.io.FileInputStream
 import java.nio.charset.StandardCharsets
 import java.nio.file._
-import java.util
+import scala.collection.JavaConverters._
 
 object IO {
 
@@ -12,14 +12,14 @@ object IO {
 
   def readAll(
     pathAndFile: String
-  ): util.List[String] = {
+  ): List[String] = {
     val path = Paths.get(pathAndFile)
-    Files.readAllLines(path, StandardCharsets.UTF_8)
+    Files.readAllLines(path, StandardCharsets.UTF_8).asScala.toList
   }
 
   def readInputStream(
     pathAndFile:String
-  ) =
+  ): FileInputStream =
     new FileInputStream(pathAndFile)
 
   def write(
@@ -71,7 +71,7 @@ object IO {
     )
   }
 
-  def filesInDir(path:String):List[String] = {
+  def filesInDir(path:String): List[String] = {
     val dir = new java.io.File(path)
     if(dir.exists && dir.isDirectory) {
       dir.listFiles().take(1).filter(_.isFile).map {
