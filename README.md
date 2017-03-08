@@ -14,6 +14,7 @@ Step 2. Add the dependency
 ```	
 	libraryDependencies += "com.github.scalavision" % "io4s" % "0.1"	
 ```
+Paths in the examples below are relative, but could also be absolute of course.
 
 ```scala
 // Read all of the file into a list of Strings
