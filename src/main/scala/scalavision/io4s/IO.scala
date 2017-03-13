@@ -14,9 +14,16 @@ object IO {
     pathAndFile: String
   ): List[String] = {
     val path = Paths.get(pathAndFile)
-    Files.readAllLines(path, StandardCharsets.UTF_8).asScala.toList
+    val text = Files.readAllLines(path, StandardCharsets.UTF_8).asScala.toList
+    path.getFileSystem.close()
+    text
   }
-
+  
+  /**
+    * Remember to close the stream after use!
+    * @param pathAndFile
+    * @return
+    */
   def readInputStream(
     pathAndFile:String
   ): FileInputStream =
@@ -37,13 +44,18 @@ object IO {
     
     mkDirs(splitPathAndFile(pathAndFile).path)
     
-    Files.write(
+    val path: Path = Files.write(
       Paths.get(
-        pathAndFile),
+        pathAndFile
+      ),
       contents.getBytes(
         StandardCharsets.UTF_8
-      ), StandardOpenOption.CREATE
+      ),
+      StandardOpenOption.CREATE
     )
+    
+    path.getFileSystem.close()
+    
   }
 
   def deleteIfExists(
@@ -68,7 +80,7 @@ object IO {
     contents: String
   ) : Unit = {
   
-    Files.write(
+    val path: Path = Files.write(
       Paths.get(
         pathAndFile
       ),
@@ -78,6 +90,7 @@ object IO {
       StandardOpenOption.APPEND
     )
     
+    path.getFileSystem.close()
     
   }
   
@@ -86,6 +99,7 @@ object IO {
     if (!directory.exists()) {
       directory.mkdirs()
     }
+    
   }
 
   def write(
@@ -93,13 +107,16 @@ object IO {
     fileName: String,
     contents: String
   ): Unit = {
-    Files.write(
+    val path = Files.write(
       Paths.get(
         filePath + separator + fileName),
       contents.getBytes(
         StandardCharsets.UTF_8
-      ), StandardOpenOption.CREATE
+      ),
+      StandardOpenOption.CREATE
     )
+    
+    path.getFileSystem.close()
   }
 
   def filesInDir(path:String): List[String] = {
