@@ -15,8 +15,12 @@ object IO {
   ): List[String] = {
     val path = Paths.get(pathAndFile)
     val text = Files.readAllLines(path, StandardCharsets.UTF_8).asScala.toList
-    path.getFileSystem.close()
+    
+    if(path.getFileSystem.isOpen)
+      path.getFileSystem.close()
+    
     text
+    
   }
   
   /**
@@ -44,17 +48,20 @@ object IO {
     
     mkDirs(splitPathAndFile(pathAndFile).path)
     
+    val content = contents.getBytes(
+      StandardCharsets.UTF_8
+    )
+    
     val path: Path = Files.write(
       Paths.get(
         pathAndFile
       ),
-      contents.getBytes(
-        StandardCharsets.UTF_8
-      ),
+      content,
       StandardOpenOption.CREATE
     )
     
-    path.getFileSystem.close()
+    if(path.getFileSystem.isOpen)
+      path.getFileSystem.close()
     
   }
 
@@ -70,7 +77,8 @@ object IO {
     if (directory.exists()) {
       Files.deleteIfExists(
         Paths.get(
-          pathAndFile)
+          pathAndFile
+        )
       )
     }
   }
@@ -90,7 +98,8 @@ object IO {
       StandardOpenOption.APPEND
     )
     
-    path.getFileSystem.close()
+    if(path.getFileSystem.isOpen)
+      path.getFileSystem.close()
     
   }
   
@@ -116,7 +125,9 @@ object IO {
       StandardOpenOption.CREATE
     )
     
-    path.getFileSystem.close()
+    if(path.getFileSystem.isOpen)
+      path.getFileSystem.close()
+    
   }
 
   def filesInDir(path:String): List[String] = {
